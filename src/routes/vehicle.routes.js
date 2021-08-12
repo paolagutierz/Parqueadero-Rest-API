@@ -2,12 +2,22 @@ const express = require("express");
 const router = express.Router();
 const Vehicle = require("../models/vehicle.model");
 const moment = require("moment");
+const AppParams = require("../models/app_params.model");
 
 router.post("/register", function (req, res) {
+  /*if (!checkCapacity()) {
+    res.status(400).send({ error: true, message: "The park is full" });
+    return;
+  }*/
+
   const new_vehicle = new Vehicle(req.body);
   //handles null error
 
-  if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+  if (
+    req.body.constructor === Object &&
+    Object.keys(req.body).length === 0 &&
+    req.body.placa === ""
+  ) {
     console.log(req.body);
     res
       .status(400)
@@ -78,5 +88,27 @@ router.get("/", function (req, res) {
     }
   });
 });
+
+/*function checkCapacity() {
+  AppParams.findByKeyName("capacity", function (err, app_param) {
+    if (err) {
+      return false;
+    } else {
+      if (app_param) {
+        const capacity = app_param.value_of;
+        Vehicle.findAll(function (err, vehicles) {
+          if (err) {
+            return false;
+          } else {
+            console.log("go");
+            return capacity > vehicles.length;
+          }
+        });
+      } else {
+        return false;
+      }
+    }
+  });
+}*/
 
 module.exports = router;

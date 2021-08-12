@@ -1,11 +1,10 @@
 const dbConn = require("./../../config/db.config");
-const moment = require("moment");
 
 //Vehicle object create
 const Vehicle = function (vehicle) {
   this.placa = vehicle.placa;
-  this.hora_entrada = vehicle.hora_entrada ? vehicle.hora_entrada : moment();
-  this.hora_salida = vehicle.hora_entrada ? moment() : null;
+  this.hora_entrada = vehicle.hora_entrada ? vehicle.hora_entrada : new Date();
+  this.hora_salida = vehicle.hora_entrada ? new Date() : null;
   this.estado = vehicle.estado ? "pagado" : "pendiente";
   this.total = vehicle.total;
 };
@@ -24,7 +23,7 @@ Vehicle.create = function (newVehicle, result) {
 
 Vehicle.findByNumberPlate = function (numberPlate, result) {
   dbConn.query(
-    "Select * from vehiculos where placa = ? ",
+    "Select * from vehiculos where placa = ? and estado = 'pendiente' ",
     numberPlate,
     function (err, res) {
       if (err) {
@@ -37,10 +36,10 @@ Vehicle.findByNumberPlate = function (numberPlate, result) {
   );
 };
 
-Vehicle.update = function (numberPlate, vehicle, result) {
+Vehicle.update = function (id, vehicle, result) {
   dbConn.query(
-    "UPDATE vehiculos SET hora_salida=?,estado=?,total=? WHERE placa = ?",
-    [vehicle.hora_salida.format(), vehicle.estado, vehicle.total, numberPlate],
+    "UPDATE vehiculos SET hora_salida=?,estado=?,total=? WHERE id = ?",
+    [vehicle.hora_salida, vehicle.estado, vehicle.total, id],
     function (err, res) {
       if (err) {
         console.log("error: ", err);
